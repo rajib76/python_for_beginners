@@ -1,0 +1,8 @@
+This is a sample text file that contains some text content.
+You can use this file for testing various file handling operations in Python.
+
+Here are some key points:
+- You can open this file in read ('r') mode to read its content.
+- You can open it in write ('w') mode to overwrite its content.
+- The 'with' statement is recommended for clean file handling.
+- Remember to close the file after reading or writing.
