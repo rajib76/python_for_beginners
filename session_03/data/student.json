@@ -1,0 +1,14 @@
+{
+    "name": "Rajib",
+    "age": 30,
+    "courses": [
+        "Python",
+        "Data Science",
+        "Machine Learning"
+    ],
+    "address": {
+        "city": "California",
+        "zip": "90001"
+    },
+    "active": true
+}

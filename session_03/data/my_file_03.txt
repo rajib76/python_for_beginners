@@ -1,0 +1,2 @@
+Hello, writing a file with the context manager.
+This line was appended.

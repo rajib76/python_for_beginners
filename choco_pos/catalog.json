@@ -1,0 +1,7 @@
+{
+    "Dark Delight":  {"price": 4.99, "stock": 10, "is_dark": true},
+    "Milk Marvel":   {"price": 3.49, "stock": 15, "is_dark": false},
+    "White Wonder":  {"price": 3.99, "stock": 8,  "is_dark": false},
+    "Mint Fusion":   {"price": 5.10, "stock": 6,  "is_dark": true},
+    "Berry Bliss":   {"price": 4.49, "stock": 12, "is_dark": false}
+}
