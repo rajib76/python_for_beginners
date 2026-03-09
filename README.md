@@ -315,72 +315,392 @@ print(f"  {name:<22}  ${price:.2f}")   # f-string with format specifiers
 
 **Files:** `session_01/02_control_structures.py`, `session_01/03_logical_operators.py`, `session_01/04_string_slicing.py`
 
-**Concept: `if / elif / else` — Making decisions**
-- Python uses **indentation** (4 spaces) to define code blocks — no curly braces
-- Comparison operators: `>`, `<`, `>=`, `<=`, `==`, `!=`
+---
+
+### `if / elif / else` — Making Decisions
+
+Every program needs to make decisions. `if` is how Python does it.
+
+**The real-world idea:** Think of it like a bouncer at a door. *"If you are over 18, you can enter. Otherwise, you cannot."* The bouncer checks a condition and takes a different action based on the result.
+
+```python
+age = 20
+
+if age > 18:
+    print("You can enter.")
+else:
+    print("You cannot enter.")
+```
+
+**How Python knows what belongs inside the `if`:**
+Unlike most languages that use `{}` curly braces, Python uses **indentation** — the spaces at the start of a line. Every line indented under `if age > 18:` is part of that block. The moment indentation goes back, the block ends.
+
+```python
+if age > 18:
+    print("You can enter.")    # inside the if block
+    print("Welcome!")          # also inside the if block
+print("This always prints.")   # outside — always runs
+```
+
+**`elif` — checking more conditions before giving up:**
 
 ```python
 def determine_student_grade(marks):
     if marks <= 70:
         grade = "C"
-    elif 70 < marks <= 80:   # Python's chained comparison — reads like math
+    elif 70 < marks <= 80:     # only checked if the first condition was False
         grade = "B"
-    else:
+    else:                      # runs only if ALL conditions above were False
         grade = "A"
+    print(f"Your grade is: {grade}")
 ```
 
-**Concept: `for` loop — Iterating over a sequence**
-```python
-for i, (name, price, is_dark) in enumerate(MENU, start=1):
-    tag = "[DARK]" if is_dark else ""
-    print(f"  {i}. {name:<16} ${price:.2f}  {tag}")
-```
-- `enumerate()` gives both the index and the value — avoids manual counter variables
-- `range(start, stop, step)` — stop is **exclusive**
+Python checks conditions **top to bottom** and stops at the first one that is `True`. Once it finds a match, it runs that block and skips everything else.
 
-**Concept: `while` loop — Repeat until condition is false**
+**Python's chained comparison — reads like math:**
 ```python
-while True:           # infinite loop
+70 < marks <= 80    # Python allows this — means: marks is greater than 70 AND at most 80
+```
+In most other languages you would have to write `marks > 70 and marks <= 80`. Python lets you chain it the way you'd write it on paper.
+
+**Comparison operators:**
+
+| Operator | Meaning | Example |
+|---|---|---|
+| `==` | equal to | `marks == 100` |
+| `!=` | not equal to | `grade != "F"` |
+| `>` | greater than | `age > 18` |
+| `<` | less than | `price < 5.00` |
+| `>=` | greater than or equal | `stock >= 1` |
+| `<=` | less than or equal | `marks <= 70` |
+
+> **Common mistake:** `=` assigns a value. `==` compares two values. Writing `if marks = 70:` is a syntax error.
+
+---
+
+### `for` loop — Doing Something for Every Item
+
+A `for` loop says: *"Go through this collection, one item at a time, and do something with each one."*
+
+**The simplest form:**
+```python
+chocolates = ["Dark Delight", "Milk Marvel", "White Wonder"]
+
+for chocolate in chocolates:
+    print(chocolate)
+
+# Output:
+# Dark Delight
+# Milk Marvel
+# White Wonder
+```
+Python takes `chocolates`, picks up the first item, puts it in `chocolate`, runs the indented block, then picks up the next item, and so on until the list is exhausted.
+
+**`range()` — looping a set number of times:**
+```python
+for i in range(5):
+    print(i)
+# Output: 0  1  2  3  4
+```
+`range(5)` generates the numbers 0, 1, 2, 3, 4. It stops **before** 5 — the stop number is always excluded.
+
+```python
+range(1, 6)      # 1, 2, 3, 4, 5       — start at 1, stop before 6
+range(0, 10, 2)  # 0, 2, 4, 6, 8       — step of 2
+range(5, 0, -1)  # 5, 4, 3, 2, 1       — counting backwards
+```
+
+**`enumerate()` — when you need both the position AND the value:**
+
+Without `enumerate`, you'd need a manual counter:
+```python
+i = 1
+for chocolate in chocolates:
+    print(f"{i}. {chocolate}")
+    i += 1
+```
+
+With `enumerate`, Python handles the counter for you:
+```python
+for i, chocolate in enumerate(chocolates, start=1):
+    print(f"{i}. {chocolate}")
+
+# Output:
+# 1. Dark Delight
+# 2. Milk Marvel
+# 3. White Wonder
+```
+`enumerate(list, start=1)` produces pairs of `(index, value)`. The `start=1` makes it count from 1 instead of 0 — natural for menus.
+
+**Looping over a list of tuples (unpacking):**
+```python
+MENU = [
+    ("Dark Delight",  4.99, True),
+    ("Milk Marvel",   3.49, False),
+]
+
+for name, price, is_dark in MENU:       # Python unpacks each tuple automatically
+    print(f"{name} costs ${price:.2f}")
+```
+Each iteration, Python takes the next tuple and unpacks its three values into `name`, `price`, and `is_dark` in one step.
+
+---
+
+### `while` loop — Keep Going Until Something Changes
+
+A `for` loop runs a **known number of times** (once per item in a collection).
+A `while` loop runs an **unknown number of times** — it keeps going until a condition becomes `False`.
+
+**The real-world idea:** Think of a vending machine. It keeps waiting for your input — it doesn't know in advance how many buttons you'll press. It just keeps running until you take your item and walk away.
+
+```python
+while True:                                    # "keep looping forever"
     choice = input("Item number (or 'done'): ").strip()
-    if choice.lower() == "done":
-        break         # exit immediately
-    if not choice.isdigit():
-        continue      # skip the rest, go back to top of loop
-```
-- `break` — exits the loop immediately
-- `continue` — skips the rest of the current iteration, restarts the loop
-- `.strip()` — removes leading/trailing whitespace from user input
 
-**Concept: Logical operators**
+    if choice.lower() == "done":
+        break                                  # EXIT the loop immediately
+
+    if not choice.isdigit():
+        print("Please enter a number.")
+        continue                               # SKIP the rest, go back to the top
+
+    print(f"You chose item {choice}.")
+```
+
+**`break` — emergency exit:**
+- Immediately stops the loop and jumps to the code after it
+- No more iterations, no checking the condition again — just out
+
+**`continue` — skip this round, try again:**
+- Stops the current iteration and jumps back to the top of the loop
+- The loop does NOT end — it just skips the rest of the current pass
+- Useful for ignoring bad input without crashing
+
+**`while True` pattern:** An infinite loop that relies entirely on `break` to exit. Common for interactive programs where you don't know how many times the user will act.
+
+**`for` vs `while` — when to use which:**
+
+| Use `for` when... | Use `while` when... |
+|---|---|
+| You have a collection to loop through | You don't know how many times you'll loop |
+| You know the number of iterations upfront | You're waiting for a condition to change |
+| Iterating over a list, range, string | Taking user input until they say "done" |
+
+---
+
+### Logical Operators — Combining Conditions
+
+Sometimes one condition is not enough. Logical operators let you combine multiple conditions into one.
+
+**`and` — both conditions must be True:**
+```python
+age = 25
+has_ticket = True
+
+if age >= 18 and has_ticket:
+    print("You can enter the event.")
+```
+If either condition is `False`, the whole thing is `False`. Both must pass.
+
+**`or` — at least one condition must be True:**
+```python
+is_member = False
+has_coupon = True
+
+if is_member or has_coupon:
+    print("You get a discount!")
+```
+Only one needs to be `True`. If either is `True`, the block runs.
+
+**`not` — flips True to False and False to True:**
+```python
+is_dark = False
+
+if not is_dark:
+    print("This is a milk or white chocolate.")
+```
+`not False` → `True`. `not True` → `False`. Use it to make conditions read more naturally.
+
+**`in` and `not in` — membership test:**
+```python
+valid_answers = ["yes", "y", "YES"]
+
+answer = input("Add anyway? ").strip()
+
+if answer in valid_answers:
+    print("Adding item.")
+
+if answer not in valid_answers:
+    print("Skipping.")
+```
+`in` checks whether a value exists inside a list (or string, or any collection). Much cleaner than writing `answer == "yes" or answer == "y" or answer == "YES"`.
+
+**Combining operators — order of evaluation:**
 ```python
 if is_dark and display_name not in ["", " "]:
-    print(f"  {name} is a rich dark chocolate — bold choice!")
-
-if confirm not in ["yes", "y"]:
-    continue
+    print("Bold choice — dark chocolate!")
 ```
-- `and` — both must be True
-- `or` — at least one must be True
-- `not` — inverts the boolean
-- `in` / `not in` — membership test in a list or string
-
-**Concept: List Comprehension — Compact loops**
+Python evaluates `not in` first, then `and`. Use parentheses when in doubt:
 ```python
-bulk_prices = [f"${p * 0.9:.2f}" for _, p, _ in MENU]
-# Result: ["$4.49", "$3.14", "$3.59", "$4.59", "$4.04"]
+if (is_dark) and (display_name not in ["", " "]):   # same result, clearer intent
 ```
-Structure: `[expression for variable in iterable]`
 
-**Concept: String Slicing**
+---
+
+### List Comprehension — Building a List in One Line
+
+This is one of Python's most loved features — and the one that confuses beginners the most. Let's build up to it step by step.
+
+**The problem it solves:**
+
+Suppose you have a list of prices and you want a new list with all prices reduced by 10%:
+
+```python
+prices = [4.99, 3.49, 3.99, 5.10, 4.49]
+```
+
+**The long way — a regular for loop:**
+```python
+discounted = []                        # 1. start with an empty list
+for p in prices:                       # 2. loop through every price
+    discounted.append(p * 0.9)         # 3. calculate and add to the new list
+
+print(discounted)
+# [4.491, 3.141, 3.591, 4.59, 4.041]
+```
+
+This works perfectly. But it takes 3 lines and a temporary empty list just to transform one list into another.
+
+**The list comprehension — the short way:**
+```python
+discounted = [p * 0.9 for p in prices]
+```
+
+That single line does **exactly the same thing** as the 3 lines above. Python reads it like a sentence:
+> *"For each `p` in `prices`, calculate `p * 0.9`, and collect all the results into a new list."*
+
+**The anatomy — reading it left to right:**
+```
+[  p * 0.9   for p   in prices  ]
+   ↑           ↑        ↑
+   what        your     the
+   to do       loop     collection
+   with it     variable to loop over
+```
+
+1. `p * 0.9` — the expression: what to put in the new list for each item
+2. `for p in prices` — the loop: where `p` comes from
+
+**More examples — building intuition:**
+
+```python
+# Squares of 1 to 5
+squares = [x**2 for x in range(1, 6)]
+# [1, 4, 9, 16, 25]
+
+# Uppercase version of every name
+names = ["dark delight", "milk marvel", "white wonder"]
+upper_names = [name.upper() for name in names]
+# ["DARK DELIGHT", "MILK MARVEL", "WHITE WONDER"]
+
+# Format prices as strings
+prices = [4.99, 3.49, 3.99]
+formatted = [f"${p:.2f}" for p in prices]
+# ["$4.99", "$3.49", "$3.99"]
+```
+
+**With a filter — only include some items:**
+You can add an `if` at the end to include only items that match a condition:
+```python
+prices = [4.99, 3.49, 3.99, 5.10, 4.49]
+
+affordable = [p for p in prices if p < 4.50]
+# [3.49, 3.99, 4.49]
+```
+
+Read as: *"For each `p` in `prices`, include it in the new list — but only if `p < 4.50`."*
+
+**The `_` placeholder — when you don't need a variable:**
+```python
+MENU = [("Dark Delight", 4.99, True), ("Milk Marvel", 3.49, False)]
+
+bulk_prices = [f"${p * 0.9:.2f}" for _, p, _ in MENU]
+# ["$4.49", "$3.14"]
+```
+Here each item in `MENU` is a tuple of 3 values. We only need the middle one (`p` = price). The `_` is Python's convention for *"I know there's a value here but I don't need it — please ignore it."*
+
+**When to use list comprehension vs a regular loop:**
+- Use list comprehension when you are **building a new list** from an existing one — it is concise and readable
+- Use a regular `for` loop when you are **doing something with side effects** (printing, saving to a file, updating a variable) — a regular loop is clearer
+
+```python
+# Good use of list comprehension — building a new list
+formatted = [f"${p:.2f}" for p in prices]
+
+# Bad use — don't use comprehension just to print things
+[print(p) for p in prices]    # works but is confusing — use a for loop instead
+```
+
+---
+
+### String Slicing — Cutting Out Parts of a String
+
+A string is a sequence of characters, and Python lets you pick out any part of it using **slice notation**.
+
+**Indexing — accessing one character:**
+```python
+text = "Chocolate"
+#       012345678     ← position numbers (index)
+
+text[0]    # "C"  — first character, index 0
+text[1]    # "h"
+text[8]    # "e"  — last character
+text[-1]   # "e"  — last character (negative index counts from the end)
+text[-2]   # "t"  — second to last
+```
+
+**Negative indexing — counting from the end:**
+```
+text =  C  h  o  c  o  l  a  t  e
+index   0  1  2  3  4  5  6  7  8   ← positive (left to right)
+        -9 -8 -7 -6 -5 -4 -3 -2 -1  ← negative (right to left)
+```
+`text[-1]` is always the last character, regardless of how long the string is. Very useful when you don't know the length in advance.
+
+**Slicing — extracting a section:**
 ```python
 text = "Chocolate Fantasy"
-text[0]       # "C"       — index 0 (first character)
-text[-1]      # "y"       — index -1 (last character)
-text[0:9]     # "Chocolat" — slice from 0 up to (not including) 9
-text[:9]      # "Chocolat" — same, start defaults to 0
-text[10:]     # "Fantasy"  — from index 10 to end
-text[::2]     # every second character
+
+text[0:9]    # "Chocolate"  — from index 0 up to (not including) index 9
+text[10:17]  # "Fantasy"    — from index 10 up to 17
+text[:9]     # "Chocolate"  — omit start → defaults to 0
+text[10:]    # "Fantasy"    — omit end → goes to the end of the string
+text[:]      # "Chocolate Fantasy" — full copy of the string
 ```
+
+**The rule:** `text[start:stop]` — start is **included**, stop is **excluded**. Same principle as `range()`.
+
+**Step — skipping characters:**
+```python
+text = "Chocolate"
+
+text[::2]    # "Cooae"   — every second character (step = 2)
+text[::-1]   # "etalocohC" — the whole string reversed (step = -1)
+```
+The full syntax is `text[start:stop:step]`. When you reverse with `[::-1]`, start and stop are omitted (defaults to the whole string) and step is -1 (go right to left).
+
+**Practical example — capping a name at 15 characters:**
+```python
+customer_name = "Bartholomew Cunningham"
+display_name = customer_name[:15]
+# "Bartholomew Cun"  — safely fits on the receipt
+```
+If the name is shorter than 15 characters, `[:15]` just returns the full name — no error. Slicing never crashes on out-of-range stops.
+
+**Key points to remember:**
+- Strings are **immutable** — slicing creates a **new** string, it never modifies the original
+- Negative indexes always count from the end (`-1` = last, `-2` = second to last)
+- Stop index is always **excluded** from the result
 
 ### → In Your ChocoPOS Today
 
@@ -595,41 +915,353 @@ Format codes: `%Y` = 4-digit year, `%m` = month, `%d` = day, `%H` = hour (24h), 
 
 **Key:** `math.ceil()` is used in ChocoPOS to never shortchange the shop.
 
-### `lambda`, `map()`, `filter()`, `sorted()` with key (10 min)
+### `lambda` — Anonymous Functions
 
-**`lambda` — anonymous (one-line) function:**
+A `lambda` is a function with no name, written in a single line. That is the whole idea.
+
+**First, recall how a normal function looks:**
+```python
+def double(x):
+    return x * 2
+
+double(5)    # 10
+```
+
+**The same thing as a lambda:**
 ```python
 double = lambda x: x * 2
-double(5)   # 10
-
-# More useful: as the key in sorted()
-sorted(menu, key=lambda item: item["price"])
+double(5)    # 10
 ```
 
-**`sorted()` with `key=`:**
+Both do exactly the same thing. The lambda version is just more compact.
+
+**The anatomy — reading it left to right:**
+```
+lambda   x   :   x * 2
+  ↑      ↑        ↑
+  keyword input   what to
+          param   return
+```
+
+- `lambda` — the keyword that says "this is an anonymous function"
+- `x` — the input parameter (can have multiple: `lambda x, y: x + y`)
+- `:` — separates the parameters from the expression
+- `x * 2` — the expression whose result is automatically returned (no `return` keyword needed)
+
+**Multiple parameters:**
 ```python
-# Sort list of dicts by price
-sorted(menu, key=lambda item: item["price"])
+add = lambda x, y: x + y
+add(3, 4)    # 7
 
-# Sort descending
-sorted(units_sold.items(), key=lambda x: x[1], reverse=True)
+greet = lambda name, greeting: f"{greeting}, {name}!"
+greet("Rajib", "Hello")    # "Hello, Rajib!"
 ```
 
-**`filter()` — keep only items that match a condition:**
+**When NOT to use lambda:**
+
+If the logic is more than a simple expression, write a proper `def` function. Lambdas are meant to be short and readable.
+
+```python
+# Bad — too complex for a lambda, hard to read
+process = lambda x: x * 2 if x > 0 else x * -1 if x < 0 else 0
+
+# Good — use a proper function
+def process(x):
+    if x > 0:
+        return x * 2
+    elif x < 0:
+        return x * -1
+    else:
+        return 0
+```
+
+**The real power of lambda — passing a function as an argument:**
+
+Lambda becomes genuinely useful when you need to pass a small, one-off function into another function — like `sorted()`, `map()`, or `filter()`. This is where most beginners first encounter it.
+
+---
+
+### `sorted()` with `key=` — Sorting by a Custom Rule
+
+`sorted()` can sort any list. By default it sorts numbers smallest-to-largest and strings A-to-Z. But what if you want to sort a list of dictionaries by a specific field?
+
+**The problem:**
+```python
+menu = [
+    {"name": "Mint Fusion",  "price": 5.10},
+    {"name": "Milk Marvel",  "price": 3.49},
+    {"name": "Berry Bliss",  "price": 4.49},
+]
+
+sorted(menu)    # ERROR — Python doesn't know how to compare dictionaries
+```
+
+**The solution — `key=`:**
+
+The `key` parameter takes a function. Python calls that function on each item and uses the result to decide the order.
+
+```python
+sorted(menu, key=lambda item: item["price"])
+# [{"name": "Milk Marvel", "price": 3.49},
+#  {"name": "Berry Bliss", "price": 4.49},
+#  {"name": "Mint Fusion", "price": 5.10}]
+```
+
+What Python actually does internally:
+1. For each item in `menu`, call `lambda item: item["price"]`
+2. That gives back `[5.10, 3.49, 4.49]`
+3. Sort the original items in the order of those numbers
+
+The lambda is the **rule** — it tells `sorted()` *what value to use when comparing items*.
+
+**Sorting descending — add `reverse=True`:**
+```python
+sorted(menu, key=lambda item: item["price"], reverse=True)
+# Most expensive first
+```
+
+**Sorting by string field:**
+```python
+sorted(menu, key=lambda item: item["name"])
+# Alphabetical by name
+```
+
+**Sorting a list of tuples:**
+```python
+sales = [("Dark Delight", 42), ("Milk Marvel", 67), ("Berry Bliss", 15)]
+
+# Sort by units sold (second element of each tuple)
+sorted(sales, key=lambda x: x[1], reverse=True)
+# [("Milk Marvel", 67), ("Dark Delight", 42), ("Berry Bliss", 15)]
+```
+
+`x[1]` gets the second element of each tuple — the sales number. The `_` is often used for the parts you don't care about:
+```python
+sorted(sales, key=lambda _, qty: qty)   # same idea
+```
+
+---
+
+### `map()` — Transform Every Item in a List
+
+`map()` applies a function to **every item** in a list and gives back the transformed results.
+
+**The problem it solves:**
+```python
+prices = [4.99, 3.49, 3.99, 5.10]
+```
+
+You want to format every price as a string like `"$4.99"`. Without `map()`:
+```python
+formatted = []
+for p in prices:
+    formatted.append(f"${p:.2f}")
+```
+
+**With `map()`:**
+```python
+formatted = list(map(lambda p: f"${p:.2f}", prices))
+# ["$4.99", "$3.49", "$3.99", "$5.10"]
+```
+
+**The anatomy:**
+```
+map(  lambda p: f"${p:.2f}"  ,  prices  )
+      ↑                          ↑
+      the function to apply       the list to apply it to
+      to each item
+```
+
+`map()` is **lazy** — it does not produce the results immediately. It produces them one at a time as needed. Wrapping it in `list()` forces it to compute everything and give you a real list.
+
+**More examples:**
+```python
+names = ["dark delight", "milk marvel"]
+upper = list(map(lambda n: n.upper(), names))
+# ["DARK DELIGHT", "MILK MARVEL"]
+
+numbers = [1, 2, 3, 4, 5]
+squares = list(map(lambda x: x**2, numbers))
+# [1, 4, 9, 16, 25]
+```
+
+**`map()` vs list comprehension:**
+
+Both do the same job. List comprehension is more Pythonic and usually preferred:
+```python
+# map
+list(map(lambda p: f"${p:.2f}", prices))
+
+# list comprehension — same result, more readable
+[f"${p:.2f}" for p in prices]
+```
+
+`map()` tends to appear in older Python code or when passing functions that already exist (not lambdas).
+
+---
+
+### `filter()` — Keep Only the Items That Pass a Test
+
+`filter()` goes through a list and keeps only the items where a function returns `True`.
+
+**The problem:**
+```python
+menu = [
+    {"name": "Milk Marvel",  "price": 3.49},
+    {"name": "Berry Bliss",  "price": 4.49},
+    {"name": "Mint Fusion",  "price": 5.10},
+]
+budget = 4.50
+```
+
+You want only the items the customer can afford. Without `filter()`:
+```python
+affordable = []
+for item in menu:
+    if item["price"] <= budget:
+        affordable.append(item)
+```
+
+**With `filter()`:**
 ```python
 affordable = list(filter(lambda item: item["price"] <= budget, menu))
+# [{"name": "Milk Marvel", "price": 3.49},
+#  {"name": "Berry Bliss", "price": 4.49}]
 ```
 
-**`map()` — transform every item:**
-```python
-formatted_prices = list(map(lambda item: f"${item['price']:.2f}", menu))
+**The anatomy:**
+```
+filter(  lambda item: item["price"] <= budget  ,  menu  )
+         ↑                                         ↑
+         the test — return True to KEEP,           the list
+         False to DROP
 ```
 
-**`zip()` — iterate two sequences in parallel:**
+Python calls the lambda on each item. If it returns `True`, the item is kept. If `False`, it is dropped.
+
+**More examples:**
 ```python
-for item, price_str in zip(sorted_menu, formatted_prices):
+numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+# [2, 4, 6, 8]
+
+in_stock = list(filter(lambda p: p["stock"] > 0, catalog))
+# Only products with stock remaining
+```
+
+**`filter()` vs list comprehension with `if`:**
+
+Again, both do the same job:
+```python
+# filter
+list(filter(lambda item: item["price"] <= budget, menu))
+
+# list comprehension — same result, usually preferred
+[item for item in menu if item["price"] <= budget]
+```
+
+---
+
+### `zip()` — Walk Two Lists Side by Side
+
+`zip()` pairs up items from two (or more) lists, giving you one pair at a time.
+
+**The problem:**
+```python
+names  = ["Milk Marvel", "Berry Bliss", "Mint Fusion"]
+prices = ["$3.49",       "$4.49",       "$5.10"]
+```
+
+You want to print them together:
+```
+Milk Marvel   $3.49
+Berry Bliss   $4.49
+Mint Fusion   $5.10
+```
+
+Without `zip()`, you'd use index-based access:
+```python
+for i in range(len(names)):
+    print(f"{names[i]}  {prices[i]}")
+```
+
+**With `zip()` — cleaner:**
+```python
+for name, price in zip(names, prices):
+    print(f"{name}  {price}")
+```
+
+`zip()` picks the first item from `names` and the first from `prices`, bundles them into a pair, and hands them to the loop together. Then it moves to the second item in both lists, and so on.
+
+**Visualising it:**
+```
+names  =  ["Milk Marvel",  "Berry Bliss",  "Mint Fusion"]
+prices =  ["$3.49",        "$4.49",        "$5.10"      ]
+           ↕                ↕               ↕
+zip    =  ("Milk Marvel", "$3.49"),  ("Berry Bliss", "$4.49"),  ("Mint Fusion", "$5.10")
+```
+
+**Three lists at once:**
+```python
+ranks  = [1,             2,             3           ]
+names  = ["Milk Marvel", "Berry Bliss", "Mint Fusion"]
+qtys   = [67,            42,            15          ]
+
+for rank, name, qty in zip(ranks, names, qtys):
+    print(f"  {rank}. {name:<18} {qty} units sold")
+```
+
+**What if the lists are different lengths?** `zip()` stops at the shortest one — extra items in the longer list are silently ignored. Use `itertools.zip_longest()` if you need to handle unequal lengths.
+
+---
+
+### Putting It All Together — The Full Picture
+
+These four tools are often used together in a pipeline: start with a list, filter it, transform it, sort it, then display it side by side with something else.
+
+```python
+menu = [
+    {"name": "Mint Fusion",  "price": 5.10, "stock": 6 },
+    {"name": "Milk Marvel",  "price": 3.49, "stock": 0 },   # out of stock
+    {"name": "Berry Bliss",  "price": 4.49, "stock": 12},
+    {"name": "Dark Delight", "price": 4.99, "stock": 10},
+]
+
+budget = 5.00
+
+# Step 1 — filter: only in-stock items within budget
+available = list(filter(
+    lambda item: item["stock"] > 0 and item["price"] <= budget,
+    menu
+))
+
+# Step 2 — sort: cheapest first
+available = sorted(available, key=lambda item: item["price"])
+
+# Step 3 — map: format prices as strings
+formatted_prices = list(map(lambda item: f"${item['price']:.2f}", available))
+
+# Step 4 — zip: display name + formatted price together
+for item, price_str in zip(available, formatted_prices):
     print(f"  {item['name']:<18} {price_str}")
+
+# Output:
+#   Milk Marvel        $3.49    ← wait, this was filtered out (stock=0)
+#   Berry Bliss        $4.49
+#   Dark Delight       $4.99
 ```
+
+**The same pipeline as list comprehensions — for comparison:**
+```python
+available = sorted(
+    [item for item in menu if item["stock"] > 0 and item["price"] <= budget],
+    key=lambda item: item["price"]
+)
+formatted_prices = [f"${item['price']:.2f}" for item in available]
+```
+
+Both approaches are valid. `map()` and `filter()` feel more like a pipeline; list comprehensions feel more like English sentences. In professional Python code you will see both.
 
 ### → In Your ChocoPOS Today
 
